@@ -1,0 +1,13 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity mul1 is
+
+	port(
+	z      : in
+	lt     : in
+	ge     :
+	ir_out :
+	salida : 
+	);

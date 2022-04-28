@@ -1,0 +1,46 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity TB_Lab5 is 
+end TB_Lab5;
+
+architecture structural of TB_Lab5
+
+signal m_pc        :  std_logic_vector(1 downto 0);
+signal	en_ir     :  std_logic;
+signal	tipo_inst :  std_logic_vector(2 downto 0);
+signal	mask_b0   :  std_logic;
+signal	en_banco  :  std_logic;
+signal	m_banco   :  std_logic_vector(1 downto 0);
+signal	m_alu_b   :  std_logic;
+signal	m_alu_a   :  std_logic;
+signal	m_shamt   :  std_logic;
+signal	tipo_acc  :  std_logic_vector(1 downto 0);
+signal	l_u       :  std_logic;
+signal	we_ram    :  std_logic;
+signal	m_ram     :  std_logic;
+signal   wr_pc_cond  :  std_logic;
+signal	wr_pc_cond  :  std_logic;
+signal	alu_op    :  std_logic_vector(3 downto 0));
+signal en_pc 	 : std_logic;
+signal pc_in 	 : std_logic_vector(31 downto 0);
+signal pc_out	 : std_logic_vector(31 downto 0);
+signal ir_in 	 : std_logic_vector(31 downto 0);
+signal ir_out	 : std_logic_vector(31 downto 0);
+signal pc_ir 	 : std_logic_vector(31 downto 0);
+signal alur_out : std_logic_vector(31 downto 0);
+signal salidaMul1 : std_logic;
+signal inm : std_logic_vector(31 downto 0);
+signal D_in : std_logic_vector(31 downto 0);
+signal d_ram_alu : std_logic_vector(31 downto 0);
+signal reg_a : std_logic_vector(31 downto 0);
+signal reg_b : std_logic_vector(31 downto 0);
+signal a : std_logic_vector(31 downto 0);
+signal b : std_logic_vector(31 downto 0);
+signal Dout : std_logic_vector(31 downto 0);
+signal shamt : std_logic_vector(3 downto 0);
+signal z : std_logic;
+signal lt : std_logic;
+signal ge : std_logic;
+signal int : std_logic;

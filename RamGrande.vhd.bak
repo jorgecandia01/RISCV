@@ -1,0 +1,27 @@
+library ieee;
+use ieee. std_logic_1164 .all;
+use ieee. numeric_std .all;
+
+entity RamGrande is
+port(
+	Addr :  in std_logic_vector(31 downto 0);
+	Din  :  in  std_logic_vector(31 downto 0);
+	tipo_acc : in  std_logic_vector(2 downto 0);
+	l_u :  in  std_logic;
+	we_ram :  in  std_logic;
+	Dout :   out std_logic_vector(31 downto 0);
+	clk : in std_logic);
+	
+architecture structural of RamGrande is
+
+begin
+
+i1: entity work.Ram  --
+port map(
+	clk => ;
+	d_in : in std_logic_vector (7 downto 0);
+	dir : in std_logic_vector (9 downto 0);
+	re : in std_logic ; 
+	we : in std_logic ; -- Write enable
+	d_out
+);

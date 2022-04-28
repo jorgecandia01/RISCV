@@ -1,0 +1,133 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity TB_InmGen is 
+end TB_InmGen;
+
+architecture structural of TB_InmGen is
+
+signal ir_out      :  std_logic_vector(31 downto 0);
+signal tipo_inst       :  std_logic_vector(2 downto 0); 
+signal mask_b0         :  std_logic;
+signal inmediato       :  std_logic;
+
+begin
+
+	constant TYPE_I : tipo_inst_t := "000";
+	constant TYPE_S : tipo_inst_t := "001";
+	constant TYPE_B : tipo_inst_t := "010";
+	constant TYPE_U : tipo_inst_t := "011";
+	constant TYPE_J : tipo_inst_t := "100";
+ 
+i1 : entity work.TB_InmGen
+port map(
+	ir_out    => ir_out,
+	tipo_inst => tipo_inst,
+	mask_b0   => mask_b0,
+	inmediato => inmediato);
+
+always :process 
+
+begin 
+---
+tipo_inst <= TYPE_I ;
+wait for 100 ns;
+
+assert inmediato (4 downto 1)=ir_out (24 downto 21)
+	severity failure
+		report "Fallo en la simulación";
+---
+tipo_inst <= TYPE_J ;
+wait for 100 ns;
+
+assert inmediato (4 downto 1)=ir_out (24 downto 21)
+	severity failure
+		report "Fallo en la simulación";
+---		
+tipo_inst <= TYPE_S ;
+wait for 100 ns;
+
+assert inmediato (4 downto 1)=ir_out (11 downto 8)
+	severity failure
+		report "Fallo en la simulación";
+---		
+tipo_inst <= TYPE_B ;
+wait for 100 ns;
+
+assert inmediato (4 downto 1)=ir_out (11 downto 8)
+	severity failure
+		report "Fallo en la simulación";
+---		
+tipo_inst <= TYPE_I ;
+wait for 100 ns;
+
+assert inmediato(10 downto 5)=ir_out(30 downto 25)
+	severity failure
+		report "Fallo en la simulación";
+---
+tipo_inst <= TYPE_S ;
+wait for 100 ns;
+
+assert inmediato(10 downto 5)=ir_out(30 downto 25)
+	severity failure
+		report "Fallo en la simulación";
+---
+tipo_inst <= TYPE_B ;
+wait for 100 ns;
+
+assert inmediato(10 downto 5)=ir_out(30 downto 25)
+	severity failure
+		report "Fallo en la simulación";
+---
+
+tipo_inst <= TYPE_J ;
+wait for 100 ns;
+
+assert inmediato(10 downto 5)=ir_out(30 downto 25)
+	severity failure
+		report "Fallo en la simulación";
+---
+tipo_inst <= TYPE_B ;
+wait for 100 ns;
+
+assert inmediato(11)=ir_out(7)
+	severity failure
+		report "Fallo en la simulación";
+---
+tipo_inst <= TYPE_J ;
+wait for 100 ns;
+
+assert inmediato(11)=ir_out(20)
+	severity failure
+		report "Fallo en la simulación";
+---
+tipo_inst <= TYPE_J ;
+wait for 100 ns;
+
+assert inmediato(19 downto 12) =ir_out(19 downto 12)
+	severity failure
+		report "Fallo en la simulación";
+---
+tipo_inst <= TYPE_U ;
+wait for 100 ns;
+
+assert inmediato(19 downto 12) =ir_out(19 downto 12)
+	severity failure
+		report "Fallo en la simulación";
+---
+tipo_inst <= TYPE_U ;
+wait for 100 ns;
+
+assert inmediato(30 downto 20) =ir_out(30 downto 20)
+	severity failure
+		report "Fallo en la simulación";
+---
+
+assert inmediato(31) = ir_out(31)
+	severity failure
+		report "Fallo en la simulación";
+---
+
+end process always;
+end structural ;

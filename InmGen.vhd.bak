@@ -1,0 +1,20 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity InmGen is
+port(
+	ir_out      :  in std_logic_vector(31 downto 0);
+	tipo_inst   :   in std_logic_vector(2 downto 0); 
+	mask_b0     :   in std_logic;
+	inm         : out std_logic_vector(31 downto 0));
+	
+architecture behavioural of InmGen is
+
+
+
+
+
+
+
+end InmGen;

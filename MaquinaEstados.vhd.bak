@@ -1,0 +1,220 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity MaquinaEstados is
+port(
+	m_pc		: out std_logic_vector(1 downto 0);
+	wr_pc		: out std_logic;
+	m_alu_a	: out std_logic_vector(1 downto 0);
+	m_alu_b	: out std_logic_vector(1 downto 0);
+	alu_op		: out std_logic_vector(3 downto 0);
+	en_ir		: out std_logic;
+	tipo_inst	: out std_logic_vector(3 downto 0);
+	m_banco	: out std_logic_vector(1 downto 0);
+	en_banco	: out std_logic;
+	wr_pc_cond	: out std_logic;
+	m_shamt	: out std_logic;
+	m_ram		: out std_logic;
+	we_ram	: out std_logic;
+	tipo_acc	: out std_logic_vector(1 downto 0);
+	l_u		: out std_logic;
+	clk		: out std_logic;
+	reset_n	: out std_logic;
+	opcode	: in std_logic_vector(4 downto 0);
+	ir_out		: in std_logic_vector(31 downto 0);
+);
+
+architecture behavioural of MaquinaEstados is
+
+type t_estados is (Reset, Fetch, Decod, Jal, Jalr, Lui3, Lwsw3, Auipc3, Arit3, Ariti3, SalCond, Ariti3, Lw4, Sw4, Arit4, Ariti4, Lw5); 
+signal estado_act, estado_sig : t_estados;
+
+begin
+VarEstado : process(clk, reset_n)
+begin
+if reset_n = '0' then
+	estado_act <= Reposo;
+else
+if rising_edge(clk) then
+	estado_act <= estado_sig;
+end if;
+end if; 
+end process;
+
+
+Salidas : process(estado_act)
+begin
+	--poner todo a cero de default
+case estado_act is
+	when Reset =>
+		m_pc <= “10”;
+		wr_pc <= ‘1’;
+
+	when Fetch =>
+		m_alu_a <= “01”;
+		m_alu_b <= “01”;
+		alu_op <= “0000”;
+		m_pc <= ‘0’;
+		wr_pc <= ‘1’;
+		en_ir <= ‘1’;
+
+	when Decod =>
+		tipo_inst <= “10”;
+		m_alu_a <= “10”;
+		m_alu_b <= “10”;
+		alu_op <= “0000”;
+		
+	when Jal =>
+		m_banco <= ‘1’;
+		wr_pc <= ‘1’;
+		en_banco <= ‘1’;
+		tipo_inst <= “0100”;
+		m_alu_a <= “10”;
+		m_alu_b <= “10”;
+		alu_op <= “0000”;
+		m_pc <= ‘0’;
+
+	when Jalr =>
+		m_banco <= ‘1’;
+		mask_b0 <= ‘1’;
+		tipo_inst <= “0000”;
+		m_alu_a <= “00”;
+		m_alu_b <= “10”;
+		alu_op <= “0000”;
+		en_banco<=’1’;
+		wr_pc<= ‘1’;
+
+	when Lui3 =>
+		tipo_inst <= “0011”;
+		m_banco <= “10”;
+		en_banco <= ‘1’;
+
+
+
+
+	when Lwsw3 =>
+		tipo_inst <= “0000” when opcode = “0010011” else “0001”; --
+		alu_op <= “0000”;
+		m_alu_a <= “00”;
+		m_alu_b <= “10”;
+
+	when Auipc3 =>
+		tipo_inst <= “0011”;
+		alu_op <= “0000”;
+		m_alu_a <= “10”;
+		m_alu_b <= “10”;
+
+	when Arit3 =>
+		alu_op <= ir_out(30)&ir_out(14)&ir_out(13)&ir_out(12); --
+		m_alu_a <= “00”;
+		m_alu_b <= “00”;
+
+	when SalCond =>
+		wr_pc_cond <= ‘1’;
+		m_pc <= ‘1’;
+		m_alu_a <= “00”;
+		m_alu_b <= “00”;
+		alu_op <= “0011” when ir_out(13)=’1’ else “0010”;
+			
+
+	when Ariti3 =>
+		alu_op <= ir_out(30)&ir_out(14)&ir_out(13)&ir_out(12); --
+		m_shamt <= ‘1’;
+		m_alu_a <= “00”;
+		m_alu_b <= “10”;
+
+	when Lw4 =>
+		tipo_acc <= ir_out(13)&ir_out(12);
+		l_u <= ir_out(14);
+
+	when Sw4 =>
+		tipo_acc <=  ir_out(13)&ir_out(12);
+		we_ram <= ‘1’;
+
+	when Arit4 =>
+		m_ram <= ‘0’;
+		m_banco <= ‘0’;
+		en_banco <= ‘1’;
+
+	when Ariti4 =>
+		m_ram <= ‘0’;
+		m_banco <= ‘0’;
+		en_banco <= ‘1’;
+
+
+	when Lw5 =>
+		l_u <=ir_out(14);
+		m_ram <= ‘1’;
+		m_banco <= ‘0’;
+		en_banco <= ‘1’;
+
+	when others =>
+		m_banco <= ‘0’;
+
+end case;
+end process;
+
+
+
+TransicionEstados : process(estado_act, flancoS, co2604, co8) begin
+estado_sig <= estado_act; 
+
+case estado_act is
+when Reset =>
+	estado_sig <= Fetch;
+when Fetch =>
+	estado_sig <= Decod;
+
+when Decod =>
+	case opcode is
+		when “11011” =>
+			estado_sig <= Jal;
+
+		when “11001” =>
+			estado_sig <= Jalr;
+
+		when “01101” =>
+			estado_sig <= Lui3;
+
+		when “0-001” =>
+			estado_sig <= Lwsw3;
+
+		when “00101” =>
+			estado_sig <= Auipc;
+
+		when “01100” =>
+			estado_sig <= Arit3;
+
+		when “11000” =>
+			estado_sig <= SalCond;
+
+		when “00100” =>
+			estado_sig <= Ariti3;
+
+when Lwsw3 =>
+if opcode = “00000” then
+estado_sig <= Lw4;
+else
+estado_sig <= Sw4;
+end if;
+
+	when Lw4 =>
+		estado_sig <= Lw5;
+
+	when Auipc3 =>
+		estado_sig <= Arit4;
+
+	when Arit3 =>
+		estado_sig <= Arit4;
+
+	when Ariti3 =>
+		estado_sig <= Ariti4;
+
+	when others =>
+		estado_sig <= Fetch;
+
+end case;
+end process;
+
+end behavioural;

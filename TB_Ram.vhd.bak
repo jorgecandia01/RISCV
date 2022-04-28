@@ -1,0 +1,26 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity TB_Ram is
+end TB_Ram;
+
+architecture tb of TB_Ram is
+signal    clk :  std_logic ;
+signal	d_in :  std_logic_vector (7 downto 0);
+signal	Addr :  std_logic_vector (9 downto 0);
+signal	we :   std_logic ; -- Write enable
+signal	d_out :  std_logic_vector (7 downto 0));
+
+begin
+
+dut: entity work.Ram
+port map(
+	clk => clk,
+	d_in => d_in,
+	Addr => Addr,
+	we   => we
+	d_out  => d_out);
+	
+
+	
